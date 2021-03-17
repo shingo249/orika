@@ -10,7 +10,7 @@ public class FieldCardController : MonoBehaviour
     public int ID;
     public bool is_PlayerCard = false;
     public static FieldCardController instance;
-    public int Field_num;
+    public int Field_num=-1;
     public bool is_summoned = false;
     private void Awake()
     {
@@ -22,7 +22,6 @@ public class FieldCardController : MonoBehaviour
     {
         Fieldmodel = new FieldCardModel(cardID); // カードデータを生成
         Fieldview.FieldShow(Fieldmodel); // 表示
-        Effect = Fieldmodel.EffectMethod;
         ID = Fieldmodel.FieldcardID;
     }
 

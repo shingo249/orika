@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] Transform playerHand;
     [SerializeField] Transform PlayerField_0, PlayerField_1, PlayerField_2, PlayerField_3, PlayerField_4, EnemyField_0, EnemyField_1, EnemyField_2, EnemyField_3, EnemyField_4;
     [SerializeField] GameObject Win_Lose_Panel;
+    [SerializeField] GameObject EffectManager;
+    [SerializeField] public GameObject ExpandedCard;
 
     public static bool isPlayerTurn = true; //ターン制御
     int MaxPlay = 1;
@@ -39,6 +41,8 @@ public class GameManager : MonoBehaviour
     public void Awake(){
         if(instance == null) instance = this;
     }
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -70,10 +74,6 @@ public class GameManager : MonoBehaviour
         } 
     }
 
-    void DelayMethod()
-    {
-        Debug.Log("Delay call");
-    }
 
     void CreateCard(int i, Transform place){
         CardController card = Instantiate(cardPrefab, playerHand);
@@ -96,19 +96,17 @@ public class GameManager : MonoBehaviour
         PlayerFieldCardList[Fieldnum].is_summoned = true;
         if(PlayerFieldCardList[Fieldnum].Fieldmodel.has_Effect)
         {
-            GameObject Effect = card.Effect;
-            Instantiate(Effect);
+            EffectManager.GetComponent<EffectManager>().ChooseMethod(PlayerFieldCardList[Fieldnum]);
         }
-        //PlayerFieldCardList[Fieldnum].is_summoned = false; 
+        PlayerFieldCardList[Fieldnum].is_summoned = false; 
     }
 
     public void EnemyCreateFieldCard()//NPC用
     {
         int vacant = -1;
-        for(int i = 0; i < 5; i++){
+       for(int i = 0; i < 5; i++){
             if(EnemyFieldCardList[i]==null)
             {
-                Debug.Log("空いてる" + i);
                 vacant = i;
                 break;
             }
@@ -127,13 +125,13 @@ public class GameManager : MonoBehaviour
             //実験用に敵側のカードを指定する
             card.FieldInit(1);
             card.is_PlayerCard = false;
+            card.Field_num = vacant;
             EnemyFieldCardList[vacant]=card;
             EnemyFieldCardList[vacant].is_summoned = true;
             if(EnemyFieldCardList[vacant].Fieldmodel.has_Effect)
             {
                 Debug.Log("効果処理");
-                GameObject Effect = card.Effect;
-                Instantiate(Effect);
+                EffectManager.GetComponent<EffectManager>().ChooseMethod(EnemyFieldCardList[vacant]);
             }
             //EnemyFieldCardList[vacant].is_summoned = false;
         }
@@ -210,7 +208,6 @@ public class GameManager : MonoBehaviour
                     if(PlayerFieldCardList[i]!=null&&EnemyFieldCardList[i]!=null)
                     {
                         CardBattle(PlayerFieldCardList[i], EnemyFieldCardList[i]);
-                        if(EnemyFieldCardList[i]==null)Debug.Log("倒した！");
                     }
                     else if(PlayerFieldCardList[i]!=null&&EnemyFieldCardList[i]==null)
                     {
@@ -221,10 +218,6 @@ public class GameManager : MonoBehaviour
                         LifeView.instance.showLife();
                     }
                 }
-            }
-            for(int i = 0; i < 5; i++){
-                if(EnemyFieldCardList[i]!=null)Debug.Log("true" + i);
-                else Debug.Log("false" + i);
             }
             isPlayerTurn = !isPlayerTurn; // ターンを逆にする
             //Invoke("DelayMethod", 3.5f);
@@ -284,10 +277,6 @@ public class GameManager : MonoBehaviour
                     LifeView.instance.showLife();
                 }
             }
-            for(int i = 0; i < 5; i++){
-                if(EnemyFieldCardList[i]!=null)Debug.Log("true" + i);
-                else Debug.Log("false" + i);
-            }
         }
         isPlayerTurn = !isPlayerTurn; // ターンを逆にする
         //Invoke("DelayMethod", 3.5f);
@@ -297,6 +286,12 @@ public class GameManager : MonoBehaviour
     {
         int damage = Attack.Fieldmodel.Fieldatk;      
         Attacked.Damage(damage);
+        if(Attacked.Fieldmodel.Fieldhp<0)
+        {
+            int place = Attacked.Field_num;
+            if(Attacked.is_PlayerCard)PlayerFieldCardList[place]=null;
+            else EnemyFieldCardList[place]=null;
+        }
     }
 
     public void Restart()
@@ -322,11 +317,4 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    IEnumerator Timer()
-    {
-        Debug.Log("3秒待ちます。");
-        //3秒待つ
-        yield return new WaitForSeconds(3);
-        Debug.Log("3秒待ちました。");
-    }
 }

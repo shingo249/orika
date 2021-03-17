@@ -14,7 +14,6 @@ public class FieldCardModel
     public Sprite Fieldicon;
     public new string Fieldeffect;
     public bool has_Effect;
-    public GameObject EffectMethod;
  
     public FieldCardModel(int cardID)
     {
@@ -29,6 +28,5 @@ public class FieldCardModel
         Fieldicon = cardEntity.Fieldicon;
         Fieldeffect = cardEntity.effect;
         has_Effect = cardEntity.has_Effect;
-        EffectMethod = cardEntity.EffectMethod;
     }
 }

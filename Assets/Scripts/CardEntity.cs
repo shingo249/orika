@@ -18,5 +18,4 @@ public class CardEntity : ScriptableObject
     public Sprite cardFrame;
     public new string effect;
     public bool has_Effect;
-    public GameObject EffectMethod;
 }

@@ -17,6 +17,7 @@ public class DropPlace : MonoBehaviour, IDropHandler
         {
             int cardID = cardC.ID;
             card.cardParent = this.transform; // カードの親要素を自分（アタッチされてるオブジェクト）にする
+            GameManager.instance.ExpandedCard.gameObject.SetActive(false);
             cardC.DestroyCard(cardC);
             FieldScript.instance.Init(cardID,Fieldnum);
             GameManager.instance.CountCheckTurn();
