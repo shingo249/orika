@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Transform PlayerField_0, PlayerField_1, PlayerField_2, PlayerField_3, PlayerField_4, EnemyField_0, EnemyField_1, EnemyField_2, EnemyField_3, EnemyField_4;
     [SerializeField] GameObject Win_Lose_Panel;
 
-    bool isPlayerTurn = true; //ターン制御
+    public static bool isPlayerTurn = true; //ターン制御
     int MaxPlay = 1;
     int PlayAuthCount = 0;//行動権カウンター
     public int[] Mana = {0,0,0,0,0};//残存マナリスト
@@ -19,9 +19,9 @@ public class GameManager : MonoBehaviour
     bool[] ColorBool = {false,false,false,false,false};//デッキ内の色判定
     List <int> Colornum = new List<int>();//デッキ内の色コードを格納
 
-    //フィールドの配列（カードコードを格納）
-    public FieldCardController[] PlayerFieldCardList = new FieldCardController[5];
-    public FieldCardController[] EnemyFieldCardList = new FieldCardController[5];
+    //フィールドの配列
+    public static FieldCardController[] PlayerFieldCardList = new FieldCardController[5];
+    public static FieldCardController[] EnemyFieldCardList = new FieldCardController[5];
 
     //ライフ
     public int PlayerLife = 0;
@@ -90,8 +90,16 @@ public class GameManager : MonoBehaviour
         else if(Fieldnum == 4) Field = PlayerField_4;
         FieldCardController card = Instantiate(FieldCardPrefab, Field);
         card.is_PlayerCard = true;
+        card.Field_num = Fieldnum;
         card.FieldInit(cardID);
         PlayerFieldCardList[Fieldnum] = card;
+        PlayerFieldCardList[Fieldnum].is_summoned = true;
+        if(PlayerFieldCardList[Fieldnum].Fieldmodel.has_Effect)
+        {
+            GameObject Effect = card.Effect;
+            Instantiate(Effect);
+        }
+        //PlayerFieldCardList[Fieldnum].is_summoned = false; 
     }
 
     public void EnemyCreateFieldCard()//NPC用
@@ -100,6 +108,7 @@ public class GameManager : MonoBehaviour
         for(int i = 0; i < 5; i++){
             if(EnemyFieldCardList[i]==null)
             {
+                Debug.Log("空いてる" + i);
                 vacant = i;
                 break;
             }
@@ -119,6 +128,14 @@ public class GameManager : MonoBehaviour
             card.FieldInit(1);
             card.is_PlayerCard = false;
             EnemyFieldCardList[vacant]=card;
+            EnemyFieldCardList[vacant].is_summoned = true;
+            if(EnemyFieldCardList[vacant].Fieldmodel.has_Effect)
+            {
+                Debug.Log("効果処理");
+                GameObject Effect = card.Effect;
+                Instantiate(Effect);
+            }
+            //EnemyFieldCardList[vacant].is_summoned = false;
         }
     }
 
@@ -193,7 +210,7 @@ public class GameManager : MonoBehaviour
                     if(PlayerFieldCardList[i]!=null&&EnemyFieldCardList[i]!=null)
                     {
                         CardBattle(PlayerFieldCardList[i], EnemyFieldCardList[i]);
-                        if(EnemyFieldCardList[i]=null)Debug.Log("倒した！");
+                        if(EnemyFieldCardList[i]==null)Debug.Log("倒した！");
                     }
                     else if(PlayerFieldCardList[i]!=null&&EnemyFieldCardList[i]==null)
                     {
@@ -204,6 +221,10 @@ public class GameManager : MonoBehaviour
                         LifeView.instance.showLife();
                     }
                 }
+            }
+            for(int i = 0; i < 5; i++){
+                if(EnemyFieldCardList[i]!=null)Debug.Log("true" + i);
+                else Debug.Log("false" + i);
             }
             isPlayerTurn = !isPlayerTurn; // ターンを逆にする
             //Invoke("DelayMethod", 3.5f);
@@ -252,7 +273,6 @@ public class GameManager : MonoBehaviour
             for(int i = 0; i < 5; i++){
                 if(PlayerFieldCardList[i]!=null&&EnemyFieldCardList[i]!=null)
                 {
-                    Debug.Log("バトル2");
                     CardBattle(EnemyFieldCardList[i], PlayerFieldCardList[i]);
                 }
                 else if(PlayerFieldCardList[i]==null&&EnemyFieldCardList[i]!=null)
@@ -263,6 +283,10 @@ public class GameManager : MonoBehaviour
                     PlayerLife-=damage;
                     LifeView.instance.showLife();
                 }
+            }
+            for(int i = 0; i < 5; i++){
+                if(EnemyFieldCardList[i]!=null)Debug.Log("true" + i);
+                else Debug.Log("false" + i);
             }
         }
         isPlayerTurn = !isPlayerTurn; // ターンを逆にする
@@ -296,5 +320,13 @@ public class GameManager : MonoBehaviour
                 CountCheckTurn();
             }
         }
+    }
+
+    IEnumerator Timer()
+    {
+        Debug.Log("3秒待ちます。");
+        //3秒待つ
+        yield return new WaitForSeconds(3);
+        Debug.Log("3秒待ちました。");
     }
 }

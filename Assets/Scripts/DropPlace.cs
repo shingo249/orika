@@ -13,7 +13,7 @@ public class DropPlace : MonoBehaviour, IDropHandler
     {
         CardMovement card = eventData.pointerDrag.GetComponent<CardMovement>(); // ドラッグしてきた情報からCardMovementを取得
         CardController cardC = eventData.pointerDrag.GetComponent<CardController>(); 
-        if (card != null&&GameManager.instance.PlayerFieldCardList[Fieldnum]==null) // もしカードがあれば、
+        if (card != null&&GameManager.PlayerFieldCardList[Fieldnum]==null) // もしカードがあれば、
         {
             int cardID = cardC.ID;
             card.cardParent = this.transform; // カードの親要素を自分（アタッチされてるオブジェクト）にする

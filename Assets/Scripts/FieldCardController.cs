@@ -6,9 +6,12 @@ public class FieldCardController : MonoBehaviour
 {
     public FieldCardView Fieldview; // カードの見た目の処理
     public FieldCardModel Fieldmodel; // カードのデータを処理
+    public GameObject Effect;
     public int ID;
     public bool is_PlayerCard = false;
     public static FieldCardController instance;
+    public int Field_num;
+    public bool is_summoned = false;
     private void Awake()
     {
         if(instance == null) instance = this;
@@ -19,12 +22,14 @@ public class FieldCardController : MonoBehaviour
     {
         Fieldmodel = new FieldCardModel(cardID); // カードデータを生成
         Fieldview.FieldShow(Fieldmodel); // 表示
+        Effect = Fieldmodel.EffectMethod;
         ID = Fieldmodel.FieldcardID;
     }
 
     public void DestroyCard(FieldCardController card)
     {
         if(is_PlayerCard) GameManager.instance.PlayerGraveyard.Add(ID);
+        Debug.Log("倒された"+Fieldmodel.Fieldhp);
         Destroy(card.gameObject);
     }
 

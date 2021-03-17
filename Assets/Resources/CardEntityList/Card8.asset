@@ -22,4 +22,5 @@ MonoBehaviour:
   Fieldicon: {fileID: 21300000, guid: 036263d015c85f94b8f93d9ed4e978dc, type: 3}
   cardFrame: {fileID: 21300000, guid: 76fb00839d143214c9d0efa026b77fd0, type: 3}
   effect: "\u3053\u306E\u30AF\u30EA\u30FC\u30C1\u30E3\u30FC\u4EE5\u5916\u306E\u30AF\u30EA\u30FC\u30C1\u30E3\u30FC\u3092\u7834\u58CA\u3059\u308B\u3002"
-  has_Effect: 1
+  has_Effect: 0
+  EffectMethod: {fileID: 0}
